@@ -24,37 +24,149 @@
             border: 1px solid #ddd;
             border-radius: 3px;
             background-color: #f9f9f9;
+            cursor: pointer;
+        }
+        .selected {
+            background-color: #aaffaa;
         }
     </style>
 </head>
 <body>
     <h1>Supermercado</h1>
-    <div class="container">
-        <div class="category">
-            <h2>Frutas y verduras frescas</h2>
-            <div class="product">Producto 1</div>
-            <div class="product">Producto 2</div>
-            <div class="product">Producto 3</div>
-            <div class="product">Producto 4</div>
-            <div class="product">Producto 5</div>
-            <div class="product">Producto 6</div>
-            <div class="product">Producto 7</div>
-            <div class="product">Producto 8</div>
-            <div class="product">Producto 9</div>
-        </div>
-        <div class="category">
-            <h2>Carnes y pescados</h2>
-            <div class="product">Producto 1</div>
-            <div class="product">Producto 2</div>
-            <div class="product">Producto 3</div>
-            <div class="product">Producto 4</div>
-            <div class="product">Producto 5</div>
-            <div class="product">Producto 6</div>
-            <div class="product">Producto 7</div>
-            <div class="product">Producto 8</div>
-            <div class="product">Producto 9</div>
-        </div>
-        <!-- Repite este bloque de código para cada categoría -->
+    <div id="menu">
+        <h2>Selecciona tus productos</h2>
+        <h3>Recuerda que puedes elegir hasta nueve productos de las categorías que deseas</h3>
+        <button onclick="mostrarCategorias()">Ver categorías</button>
     </div>
+
+    <div id="categorias" style="display: none;">
+        <h2>Categorías</h2>
+        <h3>Puedes elegir hasta nueve productos</h3>
+        <button onclick="regresarMenu()">Regresar</button>
+        <ul>
+            <li><a href="#" onclick="mostrarProductos('frutas')">Frutas y verduras frescas</a></li>
+            <li><a href="#" onclick="mostrarProductos('carnes')">Carnes y pescados</a></li>
+            <!-- Agrega más categorías aquí -->
+        </ul>
+    </div>
+
+    <div id="productos" style="display: none;" class="container">
+        <button onclick="regresarCategorias()">Regresar</button>
+        <h2>Productos</h2>
+        <div id="productosSeleccionados"></div>
+        <button onclick="finalizarSeleccion()">Finalizar selección</button>
+    </div>
+
+    <div id="resumen" style="display: none;">
+        <h2>Resumen de productos seleccionados</h2>
+        <div id="resumenProductos"></div>
+        <button onclick="regresarProductos()">Regresar</button>
+        <button onclick="confirmarSeleccion()">Confirmar selección</button>
+    </div>
+
+    <script>
+        var productosSeleccionados = [];
+
+        function mostrarCategorias() {
+            document.getElementById('menu').style.display = 'none';
+            document.getElementById('categorias').style.display = 'block';
+        }
+
+        function regresarMenu() {
+            document.getElementById('categorias').style.display = 'none';
+            document.getElementById('menu').style.display = 'block';
+        }
+
+        function regresarCategorias() {
+            document.getElementById('productos').style.display = 'none';
+            document.getElementById('categorias').style.display = 'block';
+        }
+
+        function regresarProductos() {
+            document.getElementById('resumen').style.display = 'none';
+            document.getElementById('productos').style.display = 'block';
+        }
+
+        function finalizarSeleccion() {
+            document.getElementById('productos').style.display = 'none';
+            document.getElementById('resumen').style.display = 'block';
+
+            // Muestra el resumen de productos seleccionados
+            var resumenHTML = '';
+            for (var i = 0; i < productosSeleccionados.length; i++) {
+                resumenHTML += '<div>' + productosSeleccionados[i] + '</div>';
+            }
+            document.getElementById('resumenProductos').innerHTML = resumenHTML;
+        }
+
+        function confirmarSeleccion() {
+            if (productosSeleccionados.length > 0) {
+                alert("¡Has confirmado la selección de tus productos!");
+                // Aquí puedes agregar la lógica para enviar los productos seleccionados al servidor o realizar alguna acción adicional
+            } else {
+                alert("¡No has seleccionado ningún producto!");
+            }
+        }
+
+        function mostrarProductos(categoria) {
+            document.getElementById('categorias').style.display = 'none';
+            document.getElementById('productos').style.display = 'block';
+
+            // Limpia los productos anteriores
+            document.getElementById('productosSeleccionados').innerHTML = '';
+
+            // Agrega los productos correspondientes a la categoría seleccionada
+            switch (categoria) {
+                case 'frutas':
+                    mostrarProductosFrutas();
+                    break;
+                case 'carnes':
+                    mostrarProductosCarnes();
+                    break;
+                // Agrega más casos para otras categorías
+                default:
+                    break;
+            }
+        }
+
+        function mostrarProductosFrutas() {
+            var productosHTML = '';
+            for (var i = 1; i <= 9; i++) {
+                productosHTML += '<div class="product" onclick="seleccionarProducto(\'Fruta ' + i + '\')">Fruta ' + i + '</div>';
+            }
+            document.getElementById('productos').innerHTML += productosHTML;
+        }
+
+        function mostrarProductosCarnes() {
+            var productosHTML = '';
+            for (var i = 1; i <= 9; i++) {
+                productosHTML += '<div class="product" onclick="seleccionarProducto(\'Carne ' + i + '\')">Carne ' + i + '</div>';
+            }
+            document.getElementById('productos').innerHTML += productosHTML;
+        }
+
+        function seleccionarProducto(producto) {
+            if (productosSeleccionados.length >= 9) {
+                alert("¡Ya has seleccionado el máximo de productos!");
+                return;
+            }
+
+            if (!productosSeleccionados.includes(producto)) {
+                productosSeleccionados.push(producto);
+                alert("Se agregó " + producto + " a tus productos.");
+                actualizarProductosSeleccionados();
+            } else {
+                alert("¡Este producto ya ha sido seleccionado!");
+            }
+        }
+
+        function actualizarProductosSeleccionados() {
+            var productosSeleccionadosHTML = '';
+            for (var i = 0; i < productosSeleccionados.length; i++) {
+                productosSeleccionadosHTML += '<div>' + productosSeleccionados[i] + '</div>';
+            }
+            document.getElementById('productosSeleccionados').innerHTML = productosSeleccionadosHTML;
+        }
+    </script>
 </body>
 </html>
